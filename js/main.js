@@ -50,6 +50,7 @@ spinBtn.onclick = () => {
 // メインループ
 function loop(){
 
+  // --- SPINNING ---
   if(currentState === STATE.SPINNING){
 
     // ホイール更新
@@ -62,12 +63,13 @@ function loop(){
     ballAngle = ballResult.angle;
     ballVelocity = ballResult.velocity;
 
-    // 一定以下で落下開始
+    // 減速したら落下開始
     if(ballVelocity < 0.15){
       currentState = STATE.DROPPING;
     }
   }
 
+  // --- DROPPING ---
   if(currentState === STATE.DROPPING){
 
     const ballResult = updateBall(ballAngle, ballVelocity);
@@ -76,15 +78,34 @@ function loop(){
 
     ballRadiusRatio = updateDrop(ballRadiusRatio);
 
-    // 内側到達＋減速で停止
+    // 内側到達で跳ねフェーズへ
     if(ballRadiusRatio <= 0.55 && ballVelocity < 0.02){
-      currentState = STATE.IDLE;
-      velocity = 0;
-      ballVelocity = 0;
+      currentState = STATE.BOUNCING;
     }
   }
 
-  // 描画
+  // --- BOUNCING ---
+  if(currentState === STATE.BOUNCING){
+
+    const bounceResult = updateBounce(ballAngle, ballVelocity, bounceCount);
+
+    ballAngle = bounceResult.angle;
+    ballVelocity = bounceResult.velocity;
+    bounceCount = bounceResult.bounceCount;
+
+    if(bounceCount <= 0){
+      resultNumber = getWinningNumber(ballAngle, rotation);
+
+      const resultEl = document.getElementById("result");
+      if(resultEl){
+        resultEl.textContent = "Result: " + resultNumber;
+      }
+
+      currentState = STATE.SETTLED;
+    }
+  }
+
+  // --- 描画 ---
   drawWheel(ctx, canvas, rotation);
   drawBall(ctx, canvas, ballAngle, ballRadiusRatio);
 
@@ -92,4 +113,5 @@ function loop(){
 }
 
 loop();
+
 
