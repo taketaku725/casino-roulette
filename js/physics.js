@@ -20,3 +20,18 @@ export function updateDrop(radiusRatio){
 
   return radiusRatio;
 }
+
+export function updateBounce(angle, velocity, bounceCount){
+
+  if(bounceCount <= 0){
+    return { angle, velocity, bounceCount };
+  }
+
+  // 小さくランダム反射
+  angle += (Math.random() - 0.5) * 0.4;
+
+  velocity *= 0.7;
+  bounceCount--;
+
+  return { angle, velocity, bounceCount };
+}
