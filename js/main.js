@@ -65,17 +65,21 @@ function loop(){
   }
 
   // --- ポケット壁衝突判定 ---
-  const total = 37;
-  const slice = (Math.PI * 2) / total;
-  const adjusted = (ballAngle + rotation) % (Math.PI * 2);
+  const deflectors = 12;
+  const deflectorSlice = (Math.PI * 2) / deflectors;
+
+  const adjusted = (ballAngle + rotation) % (Math.PI*2);
   const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
 
-  const distanceFromEdge = modAngle % slice;
+  const distanceFromDeflector = modAngle % deflectorSlice;
 
-  const edgeThreshold = 0.02;
-
-  if(ballRadiusRatio <= 0.56 && distanceFromEdge < edgeThreshold && Math.abs(ballVelocity) > 0.01){
-    ballVelocity = applyWallBounce(ballVelocity);
+  if(
+    ballRadiusRatio < 0.75 &&
+    ballRadiusRatio > 0.6 &&
+    distanceFromDeflector < 0.02 &&
+    Math.abs(ballVelocity) > 0.02
+  ){
+    ballVelocity = applyDeflectorBounce(ballVelocity);
   }
 
   // --- 完全停止判定 ---
@@ -93,6 +97,7 @@ function loop(){
 }
 
 loop();
+
 
 
 
