@@ -2,6 +2,8 @@ import { STATE } from "./state.js";
 import { updateRotation, updateBall, updateDrop } from "./physics.js";
 import { drawWheel } from "./wheel.js";
 import { drawBall } from "./ball.js";
+import { updateBounce } from "./physics.js";
+import { numbers, getWinningNumber } from "./result.js";
 
 const canvas = document.getElementById("roulette");
 const ctx = canvas.getContext("2d");
@@ -13,6 +15,9 @@ let velocity = 0;
 let ballAngle = 0;
 let ballVelocity = 0;
 let ballRadiusRatio = 1;
+
+let bounceCount = 0;
+let resultNumber = null;
 
 let currentState = STATE.IDLE;
 
@@ -34,6 +39,10 @@ spinBtn.onclick = () => {
 
   ballAngle = 0;
   ballRadiusRatio = 1;
+
+  bounceCount = 3 + Math.floor(Math.random()*2); // 3〜4回
+  resultNumber = null;
+  document.getElementById("result").textContent = "";
 
   currentState = STATE.SPINNING;
 };
@@ -83,3 +92,4 @@ function loop(){
 }
 
 loop();
+
