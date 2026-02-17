@@ -1,37 +1,33 @@
 export function updateRotation(rotation, velocity) {
   rotation += velocity;
-  velocity *= 0.995;
+
+  // 粘る減速
+  if (velocity > 0.002) {
+    velocity *= 0.995;
+  } else {
+    velocity *= 0.98;
+  }
+
+  if (velocity < 0.0003) velocity = 0;
+
   return { rotation, velocity };
 }
 
 export function updateBall(angle, velocity){
   angle -= velocity;
-  velocity *= 0.992;
+
+  if (velocity > 0.02) {
+    velocity *= 0.992;
+  } else {
+    velocity *= 0.96;
+  }
+
+  if (Math.abs(velocity) < 0.0005) velocity = 0;
+
   return { angle, velocity };
 }
 
-export function updateDrop(radiusRatio){
-  // 半径をゆっくり縮める
-  radiusRatio -= 0.01;
-
-  if(radiusRatio < 0.55){
-    radiusRatio = 0.55; // 内側限界
-  }
-
-  return radiusRatio;
-}
-
-export function updateBounce(angle, velocity, bounceCount){
-
-  if(bounceCount <= 0){
-    return { angle, velocity, bounceCount };
-  }
-
-  // 小さくランダム反射
-  angle += (Math.random() - 0.5) * 0.4;
-
-  velocity *= 0.7;
-  bounceCount--;
-
-  return { angle, velocity, bounceCount };
+export function applyWallBounce(ballVelocity){
+  // 壁反射（反転＋減衰）
+  return -ballVelocity * 0.6;
 }
