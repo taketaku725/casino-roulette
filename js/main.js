@@ -59,7 +59,7 @@ function loop(){
     ballAngle = ballResult.angle;
     ballVelocity = ballResult.velocity;
 
-    radiusRatio = updateDrop(radiusRatio);
+    ballRadiusRatio = updateDrop(radiusRatio);
 
     // 落ちきったら停止準備
     if(radiusRatio <= 0.55 && ballVelocity < 0.02){
@@ -70,11 +70,12 @@ function loop(){
   }
 
   drawWheel(ctx, canvas, rotation);
-  drawBall(ctx, canvas, ballAngle, radiusRatio);
+  drawBall(ctx, canvas, ballAngle, ballRadiusRatio);
 
   requestAnimationFrame(loop);
 }
 
 loop();
+
 
 
