@@ -1,6 +1,9 @@
 export const STATE = {
   IDLE: "idle",
   SPINNING: "spinning",
-  DROPPING: "dropping"
+  DROPPING: "dropping",
+  BOUNCING: "bouncing",
+  SETTLED: "settled"
 };
+
 
