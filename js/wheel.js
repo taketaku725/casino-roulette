@@ -9,9 +9,10 @@ const redNumbers = new Set([
 ]);
 
 export function drawWheel(ctx, canvas, rotation){
-  const radius = canvas.width/2;
+
+  const radius = canvas.width / 2;
   const center = radius;
-  const slice = (Math.PI*2) / numbers.length;
+  const slice = (Math.PI * 2) / numbers.length;
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
@@ -19,7 +20,9 @@ export function drawWheel(ctx, canvas, rotation){
   ctx.translate(center, center);
   ctx.rotate(rotation);
 
+  // ===== 外周ポケット =====
   for(let i=0;i<numbers.length;i++){
+
     const start = i * slice;
     const end = start + slice;
 
@@ -29,25 +32,54 @@ export function drawWheel(ctx, canvas, rotation){
     ctx.closePath();
 
     if(numbers[i] === 0){
-      ctx.fillStyle = "green";
+      ctx.fillStyle = "#0b7a2f";
     }else if(redNumbers.has(numbers[i])){
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "#b30000";
     }else{
-      ctx.fillStyle = "black";
+      ctx.fillStyle = "#111";
     }
 
     ctx.fill();
-    ctx.strokeStyle="#111";
+
+    // 仕切り線（太くする）
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = "#888";
     ctx.stroke();
 
+    // 数字
     ctx.save();
     ctx.rotate(start + slice/2);
     ctx.fillStyle="white";
     ctx.font = radius*0.08 + "px Arial";
     ctx.textAlign="right";
-    ctx.fillText(numbers[i], radius*0.95, 5);
+    ctx.fillText(numbers[i], radius*0.92, 5);
     ctx.restore();
   }
+
+  // ===== 内側ポケットリング =====
+  const innerRingRadius = radius * 0.55;
+
+  ctx.beginPath();
+  ctx.arc(0,0,innerRingRadius,0,Math.PI*2);
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#555";
+  ctx.stroke();
+
+  // ===== 中央コーン =====
+  const coneRadius = radius * 0.25;
+
+  const gradient = ctx.createRadialGradient(
+    0,0,0,
+    0,0,coneRadius
+  );
+
+  gradient.addColorStop(0,"#ddd");
+  gradient.addColorStop(1,"#777");
+
+  ctx.beginPath();
+  ctx.arc(0,0,coneRadius,0,Math.PI*2);
+  ctx.fillStyle = gradient;
+  ctx.fill();
 
   ctx.restore();
 }
