@@ -31,4 +31,13 @@ export function applyDeflectorBounce(ballVelocity){
   return -ballVelocity * 0.7 + (Math.random() - 0.5) * 0.01;
 }
 
+export function updateHeight(height, velocity){
+  // 速度がある時は少し跳ねる
+  if(Math.abs(velocity) > 0.05){
+    height = 0.3;
+  } else {
+    height *= 0.9;
+  }
 
+  return height;
+}
