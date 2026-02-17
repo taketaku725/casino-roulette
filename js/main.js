@@ -1,13 +1,12 @@
-import { STATE } from "./state.js";
-import { updateRotation, updateBall, updateDrop } from "./physics.js";
+import { updateRotation, updateBall, applyDeflectorBounce, updateHeight } from "./physics.js";
 import { drawWheel } from "./wheel.js";
 import { drawBall } from "./ball.js";
-import { updateBounce } from "./physics.js";
-import { numbers, getWinningNumber } from "./result.js";
+import { getWinningNumber } from "./result.js";
 
 const canvas = document.getElementById("roulette");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
+const resultEl = document.getElementById("result");
 
 let rotation = 0;
 let velocity = 0;
@@ -15,13 +14,12 @@ let velocity = 0;
 let ballAngle = 0;
 let ballVelocity = 0;
 let ballRadiusRatio = 1;
+let ballHeight = 0;
 
-let bounceCount = 0;
 let resultNumber = null;
+let settleVibration = 0;
 
-let currentState = STATE.IDLE;
-
-// リサイズ対応
+// ===== リサイズ =====
 function resize(){
   const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
   canvas.width = size;
@@ -30,27 +28,26 @@ function resize(){
 resize();
 window.addEventListener("resize", resize);
 
-// スピン開始
+// ===== スピン開始 =====
 spinBtn.onclick = () => {
-  if(currentState !== STATE.IDLE) return;
 
-  velocity = 0.3 + Math.random() * 0.05;
-  ballVelocity = 0.6 + Math.random() * 0.1;
+  velocity = 0.3 + Math.random()*0.05;
+  ballVelocity = 0.6 + Math.random()*0.1;
 
   ballAngle = 0;
   ballRadiusRatio = 1;
+  ballHeight = 0;
 
-  bounceCount = 3 + Math.floor(Math.random()*2); // 3〜4回
   resultNumber = null;
-  document.getElementById("result").textContent = "";
+  settleVibration = 0;
 
-  currentState = STATE.SPINNING;
+  if(resultEl) resultEl.textContent = "";
 };
 
-// メインループ
+// ===== メインループ =====
 function loop(){
 
-  // --- 回転更新 ---
+  // ---- 回転更新 ----
   const wheelResult = updateRotation(rotation, velocity);
   rotation = wheelResult.rotation;
   velocity = wheelResult.velocity;
@@ -59,18 +56,17 @@ function loop(){
   ballAngle = ballResult.angle;
   ballVelocity = ballResult.velocity;
 
-  // --- 落下判定 ---
+  // ---- 落下処理 ----
   if(ballVelocity < 0.15 && ballRadiusRatio > 0.55){
     ballRadiusRatio -= 0.01;
   }
 
-  // --- ポケット壁衝突判定 ---
+  // ---- ディフレクター判定 ----
   const deflectors = 12;
   const deflectorSlice = (Math.PI * 2) / deflectors;
 
   const adjusted = (ballAngle + rotation) % (Math.PI*2);
   const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
-
   const distanceFromDeflector = modAngle % deflectorSlice;
 
   if(
@@ -82,22 +78,50 @@ function loop(){
     ballVelocity = applyDeflectorBounce(ballVelocity);
   }
 
-  // --- 完全停止判定 ---
-  if(ballVelocity === 0 && velocity === 0 && ballRadiusRatio <= 0.55){
+  // ---- ポケット壁衝突 ----
+  const total = 37;
+  const slice = (Math.PI * 2) / total;
+  const distanceFromEdge = modAngle % slice;
+
+  if(
+    ballRadiusRatio <= 0.56 &&
+    distanceFromEdge < 0.02 &&
+    Math.abs(ballVelocity) > 0.01
+  ){
+    ballVelocity = -ballVelocity * 0.6;
+  }
+
+  // ---- 高さ更新 ----
+  ballHeight = updateHeight(ballHeight, ballVelocity);
+
+  // ---- 停止判定 ----
+  if(
+    Math.abs(ballVelocity) < 0.0005 &&
+    Math.abs(velocity) < 0.0005 &&
+    ballRadiusRatio <= 0.55
+  ){
+
+    ballVelocity = 0;
+    velocity = 0;
+
     if(resultNumber === null){
       resultNumber = getWinningNumber(ballAngle, rotation);
-      document.getElementById("result").textContent = "Result: " + resultNumber;
+      if(resultEl) resultEl.textContent = "Result: " + resultNumber;
+      settleVibration = 0.01;
+    }
+
+    // 微振動
+    if(settleVibration > 0.0001){
+      ballAngle += (Math.random() - 0.5) * settleVibration;
+      settleVibration *= 0.95;
     }
   }
 
+  // ---- 描画 ----
   drawWheel(ctx, canvas, rotation);
-  drawBall(ctx, canvas, ballAngle, ballRadiusRatio);
+  drawBall(ctx, canvas, ballAngle, ballRadiusRatio, ballHeight);
 
   requestAnimationFrame(loop);
 }
 
 loop();
-
-
-
-
