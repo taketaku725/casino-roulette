@@ -50,62 +50,42 @@ spinBtn.onclick = () => {
 // メインループ
 function loop(){
 
-  // --- SPINNING ---
-  if(currentState === STATE.SPINNING){
+  // --- 回転更新 ---
+  const wheelResult = updateRotation(rotation, velocity);
+  rotation = wheelResult.rotation;
+  velocity = wheelResult.velocity;
 
-    // ホイール更新
-    const wheelResult = updateRotation(rotation, velocity);
-    rotation = wheelResult.rotation;
-    velocity = wheelResult.velocity;
+  const ballResult = updateBall(ballAngle, ballVelocity);
+  ballAngle = ballResult.angle;
+  ballVelocity = ballResult.velocity;
 
-    // 球更新
-    const ballResult = updateBall(ballAngle, ballVelocity);
-    ballAngle = ballResult.angle;
-    ballVelocity = ballResult.velocity;
-
-    // 減速したら落下開始
-    if(ballVelocity < 0.15){
-      currentState = STATE.DROPPING;
-    }
+  // --- 落下判定 ---
+  if(ballVelocity < 0.15 && ballRadiusRatio > 0.55){
+    ballRadiusRatio -= 0.01;
   }
 
-  // --- DROPPING ---
-  if(currentState === STATE.DROPPING){
+  // --- ポケット壁衝突判定 ---
+  const total = 37;
+  const slice = (Math.PI * 2) / total;
+  const adjusted = (ballAngle + rotation) % (Math.PI * 2);
+  const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
 
-    const ballResult = updateBall(ballAngle, ballVelocity);
-    ballAngle = ballResult.angle;
-    ballVelocity = ballResult.velocity;
+  const distanceFromEdge = modAngle % slice;
 
-    ballRadiusRatio = updateDrop(ballRadiusRatio);
+  const edgeThreshold = 0.02;
 
-    // 内側到達で跳ねフェーズへ
-    if(ballRadiusRatio <= 0.55 && ballVelocity < 0.02){
-      currentState = STATE.BOUNCING;
-    }
+  if(ballRadiusRatio <= 0.56 && distanceFromEdge < edgeThreshold && Math.abs(ballVelocity) > 0.01){
+    ballVelocity = applyWallBounce(ballVelocity);
   }
 
-  // --- BOUNCING ---
-  if(currentState === STATE.BOUNCING){
-
-    const bounceResult = updateBounce(ballAngle, ballVelocity, bounceCount);
-
-    ballAngle = bounceResult.angle;
-    ballVelocity = bounceResult.velocity;
-    bounceCount = bounceResult.bounceCount;
-
-    if(bounceCount <= 0){
+  // --- 完全停止判定 ---
+  if(ballVelocity === 0 && velocity === 0 && ballRadiusRatio <= 0.55){
+    if(resultNumber === null){
       resultNumber = getWinningNumber(ballAngle, rotation);
-
-      const resultEl = document.getElementById("result");
-      if(resultEl){
-        resultEl.textContent = "Result: " + resultNumber;
-      }
-
-      currentState = STATE.SETTLED;
+      document.getElementById("result").textContent = "Result: " + resultNumber;
     }
   }
 
-  // --- 描画 ---
   drawWheel(ctx, canvas, rotation);
   drawBall(ctx, canvas, ballAngle, ballRadiusRatio);
 
@@ -113,5 +93,6 @@ function loop(){
 }
 
 loop();
+
 
 
