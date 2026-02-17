@@ -1,0 +1,19 @@
+body{
+  margin:0;
+  background:#1a1a1a;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+canvas{
+  background:#222;
+}
+
+button{
+  position:absolute;
+  bottom:40px;
+  padding:12px 24px;
+  font-size:18px;
+}
