@@ -27,7 +27,8 @@ export function updateBall(angle, velocity){
   return { angle, velocity };
 }
 
-export function applyWallBounce(ballVelocity){
-  // 壁反射（反転＋減衰）
-  return -ballVelocity * 0.6;
+export function applyDeflectorBounce(ballVelocity){
+  return -ballVelocity * 0.7 + (Math.random() - 0.5) * 0.01;
 }
+
+
