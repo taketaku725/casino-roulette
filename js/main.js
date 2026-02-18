@@ -8,6 +8,7 @@ const canvas = document.getElementById("roulette");
 const ctx = canvas.getContext("2d");
 const spinBtn = document.getElementById("spinBtn");
 const resultEl = document.getElementById("result");
+const typeButtons = document.querySelectorAll(".typeBtn");
 
 // ==============================
 // 定数（構造一致版）
@@ -62,6 +63,8 @@ spinBtn.onclick = () => {
 
   isSpinning = true;
   isLocked = false;
+
+  setButtonsDisabled(true);
 
   velocity = 0.3 + Math.random()*0.05;
   ballVelocity = 0.6 + Math.random()*0.1;
@@ -177,6 +180,7 @@ function loop(){
 
     if(Math.abs(velocity) < 0.0005){
       isSpinning = false;
+      setButtonsDisabled(false); 
     }
   }
 
@@ -185,3 +189,10 @@ function loop(){
 }
 
 loop();
+
+
+function setButtonsDisabled(state){
+  spinBtn.disabled = state;
+  typeButtons.forEach(btn => btn.disabled = state);
+}
+
