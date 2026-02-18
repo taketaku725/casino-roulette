@@ -116,7 +116,7 @@ function loop(){
     // 落下（中央まで）
     if(ballRadiusRatio > POCKET_CENTER_RATIO){
       if(Math.abs(ballVelocity) < 0.3){
-        ballRadiusRatio -= 0.004;
+        ballRadiusRatio -= 0.0025;
       }
     }
 
@@ -195,4 +195,5 @@ function setButtonsDisabled(state){
   spinBtn.disabled = state;
   typeButtons.forEach(btn => btn.disabled = state);
 }
+
 
