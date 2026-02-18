@@ -10,33 +10,50 @@ const redNumbers = new Set([
 
 export function drawWheel(ctx, canvas, rotation){
 
-  const radius = canvas.width / 2;
-  const center = radius;
+  const R = canvas.width / 2;
+  const center = R;
   const slice = (Math.PI * 2) / numbers.length;
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.save();
   ctx.translate(center, center);
 
-  // ===== 外木枠 =====
-  const woodGrad = ctx.createRadialGradient(0,0,radius*0.9,0,0,radius*1.05);
-  woodGrad.addColorStop(0,"#6b4423");
-  woodGrad.addColorStop(1,"#2c160a");
+  // ==============================
+  // 外枠（回転しない）
+  // ==============================
+  const outerR = R * 1.05;
+  const outerGrad = ctx.createRadialGradient(0,0,R*0.95,0,0,outerR);
+  outerGrad.addColorStop(0,"#5a3b1e");
+  outerGrad.addColorStop(1,"#2b160b");
 
   ctx.beginPath();
-  ctx.arc(0,0,radius*1.05,0,Math.PI*2);
+  ctx.arc(0,0,outerR,0,Math.PI*2);
+  ctx.fillStyle = outerGrad;
+  ctx.fill();
+
+  // ==============================
+  // 回転開始
+  // ==============================
+  ctx.rotate(rotation);
+
+  // ------------------------------
+  // 木製回転部（無地）
+  // ------------------------------
+  const woodR = R * 0.95;
+  const woodGrad = ctx.createRadialGradient(0,0,R*0.4,0,0,woodR);
+  woodGrad.addColorStop(0,"#7a4d26");
+  woodGrad.addColorStop(1,"#3a1f0f");
+
+  ctx.beginPath();
+  ctx.arc(0,0,woodR,0,Math.PI*2);
   ctx.fillStyle = woodGrad;
   ctx.fill();
 
-  // ===== 金属縁 =====
-  ctx.beginPath();
-  ctx.arc(0,0,radius*0.98,0,Math.PI*2);
-  ctx.lineWidth = radius*0.05;
-  ctx.strokeStyle = "#c0c0c0";
-  ctx.stroke();
-
-  // ===== 回転部 =====
-  ctx.rotate(rotation);
+  // ------------------------------
+  // 数字リング
+  // ------------------------------
+  const numOuter = R * 0.75;
+  const numInner = R * 0.55;
 
   for(let i=0;i<numbers.length;i++){
 
@@ -44,58 +61,79 @@ export function drawWheel(ctx, canvas, rotation){
     const end = start + slice;
 
     ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.arc(0,0,radius,start,end);
+    ctx.arc(0,0,numOuter,start,end);
+    ctx.arc(0,0,numInner,end,start,true);
     ctx.closePath();
 
     if(numbers[i] === 0){
       ctx.fillStyle = "#0b7a2f";
-    }else if(redNumbers.has(numbers[i])){
+    } else if(redNumbers.has(numbers[i])){
       ctx.fillStyle = "#b30000";
-    }else{
+    } else {
       ctx.fillStyle = "#111";
     }
 
     ctx.fill();
 
-    // ===== ポケット立体感（内側影）=====
-    ctx.beginPath();
-    ctx.arc(0,0,radius*0.55,start,end);
-    ctx.lineTo(0,0);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(0,0,0,0.15)";
-    ctx.fill();
-
-    // ===== 仕切り立体線 =====
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#999";
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#aaa";
     ctx.stroke();
 
-    // 数字
+    // 数字描画（中央配置）
     ctx.save();
     ctx.rotate(start + slice/2);
-    ctx.fillStyle="white";
-    ctx.font = radius*0.08 + "px Arial";
-    ctx.textAlign="right";
-    ctx.fillText(numbers[i], radius*0.92, 5);
+    ctx.fillStyle = "white";
+    ctx.font = (R*0.07) + "px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(numbers[i], 0, -((numOuter+numInner)/2));
     ctx.restore();
   }
 
-  // ===== 内リング =====
-  ctx.beginPath();
-  ctx.arc(0,0,radius*0.55,0,Math.PI*2);
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = "#444";
-  ctx.stroke();
+  // ------------------------------
+  // ポケットリング
+  // ------------------------------
+  const pocketOuter = R * 0.55;
+  const pocketInner = R * 0.25;
 
-  // ===== 中央コーン =====
-  const coneR = radius*0.25;
-  const grad = ctx.createRadialGradient(0,0,0,0,0,coneR);
+  ctx.beginPath();
+  ctx.arc(0,0,pocketOuter,0,Math.PI*2);
+  ctx.fillStyle = "#222";
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(0,0,pocketInner,0,Math.PI*2);
+  ctx.fillStyle = "#111";
+  ctx.fill();
+
+  // ポケット仕切り
+  ctx.strokeStyle = "#777";
+  ctx.lineWidth = 3;
+
+  for(let i=0;i<numbers.length;i++){
+    const angle = i * slice;
+    ctx.beginPath();
+    ctx.moveTo(
+      Math.cos(angle) * pocketInner,
+      Math.sin(angle) * pocketInner
+    );
+    ctx.lineTo(
+      Math.cos(angle) * pocketOuter,
+      Math.sin(angle) * pocketOuter
+    );
+    ctx.stroke();
+  }
+
+  // ------------------------------
+  // 軸部分
+  // ------------------------------
+  const spindleR = R * 0.12;
+  const grad = ctx.createRadialGradient(0,0,0,0,0,spindleR);
   grad.addColorStop(0,"#eee");
   grad.addColorStop(1,"#777");
 
   ctx.beginPath();
-  ctx.arc(0,0,coneR,0,Math.PI*2);
+  ctx.arc(0,0,spindleR,0,Math.PI*2);
   ctx.fillStyle = grad;
   ctx.fill();
 
