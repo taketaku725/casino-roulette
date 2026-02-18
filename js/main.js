@@ -48,41 +48,43 @@ spinBtn.onclick = () => {
 };
 
 // ===== メインループ =====
-function loop(){
+function loop() {
 
-  // ---- 回転更新 ----
+  // ---- ホイール更新 ----
   const wheelResult = updateRotation(rotation, velocity);
   rotation = wheelResult.rotation;
   velocity = wheelResult.velocity;
 
-  // ==============================
-  // ロックしていない時だけ物理更新
-  // ==============================
-  if(!isLocked){
+  if (!isLocked) {
 
+    // ---- ボール更新 ----
     const ballResult = updateBall(ballAngle, ballVelocity);
     ballAngle = ballResult.angle;
     ballVelocity = ballResult.velocity;
 
-    // ---- 落下処理 ----
-    if(ballVelocity < 0.15 && ballRadiusRatio > 0.55){
-      ballRadiusRatio -= 0.01;
+    // =====================================
+    // ★ 落下処理（安定版）
+    // =====================================
+    if (ballRadiusRatio > 0.55) {
+      if (Math.abs(ballVelocity) < 0.3) {
+        ballRadiusRatio -= 0.004;
+      }
     }
 
     // ---- ディフレクター判定 ----
     const deflectors = 12;
     const deflectorSlice = (Math.PI * 2) / deflectors;
 
-    const adjusted = (ballAngle + rotation) % (Math.PI*2);
-    const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
+    const adjusted = (ballAngle + rotation) % (Math.PI * 2);
+    const modAngle = adjusted < 0 ? adjusted + Math.PI * 2 : adjusted;
     const distanceFromDeflector = modAngle % deflectorSlice;
 
-    if(
-      ballRadiusRatio < 0.75 &&
+    if (
+      ballRadiusRatio < 0.8 &&
       ballRadiusRatio > 0.6 &&
       distanceFromDeflector < 0.02 &&
       Math.abs(ballVelocity) > 0.02
-    ){
+    ) {
       ballVelocity = applyDeflectorBounce(ballVelocity);
     }
 
@@ -91,11 +93,11 @@ function loop(){
     const slice = (Math.PI * 2) / total;
     const distanceFromEdge = modAngle % slice;
 
-    if(
+    if (
       ballRadiusRatio <= 0.56 &&
       distanceFromEdge < 0.02 &&
       Math.abs(ballVelocity) > 0.01
-    ){
+    ) {
       ballVelocity = -ballVelocity * 0.6;
     }
 
@@ -103,32 +105,28 @@ function loop(){
     ballHeight = updateHeight(ballHeight, ballVelocity);
 
     // ---- ロック判定 ----
-    if(
+    if (
       Math.abs(ballVelocity) < 0.0005 &&
       ballRadiusRatio <= 0.55
-    ){
-
+    ) {
       ballVelocity = 0;
 
       resultNumber = getWinningNumber(ballAngle, rotation);
-
-      if(resultEl) resultEl.textContent = "Result: " + resultNumber;
+      if (resultEl) resultEl.textContent = "Result: " + resultNumber;
 
       lockedOffset = ballAngle + rotation;
       isLocked = true;
-
-      settleVibration = 0.01; // ← ここ重要
+      settleVibration = 0.01;
     }
 
   } else {
 
-    // ==============================
-    // ロック後はポケット追従
-    // ==============================
+    // =====================================
+    // ★ ロック後（ポケット追従）
+    // =====================================
     ballAngle = lockedOffset - rotation;
 
-    // 微振動
-    if(settleVibration > 0.0001){
+    if (settleVibration > 0.0001) {
       ballAngle += (Math.random() - 0.5) * settleVibration;
       settleVibration *= 0.95;
     }
@@ -142,6 +140,7 @@ function loop(){
 }
 
 loop();
+
 
 
 
