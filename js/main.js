@@ -19,6 +19,9 @@ let ballHeight = 0;
 let resultNumber = null;
 let settleVibration = 0;
 
+let isLocked = false;
+let lockedOffset = 0;
+
 // ===== リサイズ =====
 function resize(){
   const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
@@ -125,3 +128,4 @@ function loop(){
 }
 
 loop();
+
