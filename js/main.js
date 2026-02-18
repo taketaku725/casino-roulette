@@ -50,6 +50,9 @@ spinBtn.onclick = () => {
 // ===== メインループ =====
 function loop(){
 
+  if(isLocked){
+    ballAngle = lockedOffset - rotation;
+  }
   // ---- 回転更新 ----
   const wheelResult = updateRotation(rotation, velocity);
   rotation = wheelResult.rotation;
@@ -100,17 +103,19 @@ function loop(){
   // ---- 停止判定 ----
   if(
     Math.abs(ballVelocity) < 0.0005 &&
-    Math.abs(velocity) < 0.0005 &&
-    ballRadiusRatio <= 0.55
+    ballRadiusRatio <= 0.55 &&
+    !isLocked
   ){
 
     ballVelocity = 0;
-    velocity = 0;
 
-    if(resultNumber === null){
-      resultNumber = getWinningNumber(ballAngle, rotation);
-      if(resultEl) resultEl.textContent = "Result: " + resultNumber;
-      settleVibration = 0.01;
+    resultNumber = getWinningNumber(ballAngle, rotation);
+
+    if(resultEl) resultEl.textContent = "Result: " + resultNumber;
+
+    // ロック処理
+    lockedOffset = ballAngle + rotation;
+    isLocked = true;
     }
 
     // 微振動
@@ -128,4 +133,5 @@ function loop(){
 }
 
 loop();
+
 
