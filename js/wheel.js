@@ -76,6 +76,27 @@ export function drawWheel(ctx, canvas, rotation, numbers){
   ctx.fillStyle = "#111";
   ctx.fill();
 
+  const pocketOuter = R * 0.55;
+  const pocketInner = R * 0.25;
+
+  ctx.strokeStyle = "#888";
+  ctx.lineWidth = 3;
+
+  for(let i=0;i<numbers.length;i++){
+    const angle = i * slice;
+
+    ctx.beginPath();
+    ctx.moveTo(
+      Math.cos(angle) * pocketInner,
+      Math.sin(angle) * pocketInner
+    );
+    ctx.lineTo(
+      Math.cos(angle) * pocketOuter,
+      Math.sin(angle) * pocketOuter
+    );
+    ctx.stroke();
+  }
+
   // 軸
   ctx.beginPath();
   ctx.arc(0,0,R*0.12,0,Math.PI*2);
@@ -84,3 +105,4 @@ export function drawWheel(ctx, canvas, rotation, numbers){
 
   ctx.restore();
 }
+
