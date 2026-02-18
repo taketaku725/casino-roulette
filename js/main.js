@@ -171,7 +171,7 @@ function loop(){
   } else {
 
     // ポケット追従
-    ballAngle = lockedOffset - rotation;
+    ballAngle = lockedOffset + rotation;
 
     if(settleVibration > 0.0001){
       ballAngle += (Math.random() - 0.5) * settleVibration;
@@ -195,5 +195,6 @@ function setButtonsDisabled(state){
   spinBtn.disabled = state;
   typeButtons.forEach(btn => btn.disabled = state);
 }
+
 
 
