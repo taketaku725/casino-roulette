@@ -2,6 +2,7 @@ import { updateRotation, updateBall, applyDeflectorBounce, updateHeight } from "
 import { drawWheel } from "./wheel.js";
 import { drawBall } from "./ball.js";
 import { getWinningNumber } from "./result.js";
+import { layouts } from "./layout.js";
 
 const canvas = document.getElementById("roulette");
 const ctx = canvas.getContext("2d");
@@ -9,14 +10,19 @@ const spinBtn = document.getElementById("spinBtn");
 const resultEl = document.getElementById("result");
 
 // ==============================
-// 定数（構造に合わせる）
+// 定数（構造一致版）
 // ==============================
-const POCKET_OUTER_RATIO = 0.55;     // ポケット外縁
-const POCKET_CENTER_RATIO = 0.40;    // ポケット中央（最終位置）
-const POCKET_EDGE_BAND_MIN = 0.52;   // 外縁跳ね帯
+const POCKET_OUTER_RATIO = 0.55;
+const POCKET_CENTER_RATIO = 0.40;
+const POCKET_EDGE_BAND_MIN = 0.52;
 const POCKET_EDGE_BAND_MAX = 0.56;
-
 const DEFLECTORS = 12;
+
+// ==============================
+// ルーレットタイプ
+// ==============================
+let rouletteType = "EU";
+let numbers = layouts[rouletteType];
 
 // ==============================
 // 状態
@@ -26,7 +32,7 @@ let velocity = 0;
 
 let ballAngle = 0;
 let ballVelocity = 0;
-let ballRadiusRatio = 1;   // 1 = 外周
+let ballRadiusRatio = 1;
 let ballHeight = 0;
 
 let resultNumber = null;
@@ -52,7 +58,7 @@ window.addEventListener("resize", resize);
 // ==============================
 spinBtn.onclick = () => {
 
-  if(isSpinning) return; // 連打防止
+  if(isSpinning) return;
 
   isSpinning = true;
   isLocked = false;
@@ -71,47 +77,53 @@ spinBtn.onclick = () => {
 };
 
 // ==============================
+// タイプ切替
+// ==============================
+function switchRoulette(type){
+  if(isSpinning) return;
+  rouletteType = type;
+  numbers = layouts[type];
+  if(resultEl) resultEl.textContent = "";
+}
+window.switchRoulette = switchRoulette;
+
+// ==============================
 // メインループ
 // ==============================
-function loop() {
+function loop(){
 
-  // まずホイール描画（SPIN前はこれだけ）
-  drawWheel(ctx, canvas, rotation);
+  drawWheel(ctx, canvas, rotation, numbers);
 
   if(!isSpinning){
     requestAnimationFrame(loop);
     return;
   }
 
-  // ---- ホイール更新 ----
+  // ---- ホイール ----
   const wheelResult = updateRotation(rotation, velocity);
   rotation = wheelResult.rotation;
   velocity = wheelResult.velocity;
 
-  if (!isLocked) {
+  if(!isLocked){
 
-    // ---- ボール更新 ----
     const ballResult = updateBall(ballAngle, ballVelocity);
     ballAngle = ballResult.angle;
     ballVelocity = ballResult.velocity;
 
-    // =====================================
-    // 落下（ポケット中央まで）
-    // =====================================
-    if (ballRadiusRatio > POCKET_CENTER_RATIO) {
-      if (Math.abs(ballVelocity) < 0.3) {
+    // 落下（中央まで）
+    if(ballRadiusRatio > POCKET_CENTER_RATIO){
+      if(Math.abs(ballVelocity) < 0.3){
         ballRadiusRatio -= 0.004;
       }
     }
 
-    // ---- ディフレクター ----
+    // ディフレクター
     const deflectorSlice = (Math.PI * 2) / DEFLECTORS;
-
-    const adjusted = (ballAngle + rotation) % (Math.PI * 2);
-    const modAngle = adjusted < 0 ? adjusted + Math.PI * 2 : adjusted;
+    const adjusted = (ballAngle + rotation) % (Math.PI*2);
+    const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
     const distanceFromDeflector = modAngle % deflectorSlice;
 
-    if (
+    if(
       ballRadiusRatio < 0.8 &&
       ballRadiusRatio > 0.6 &&
       distanceFromDeflector < 0.02 &&
@@ -120,12 +132,12 @@ function loop() {
       ballVelocity = applyDeflectorBounce(ballVelocity);
     }
 
-    // ---- ポケット外縁跳ね ----
-    const total = 37;
+    // ポケット縁
+    const total = numbers.length;
     const slice = (Math.PI * 2) / total;
     const distanceFromEdge = modAngle % slice;
 
-    if (
+    if(
       ballRadiusRatio <= POCKET_EDGE_BAND_MAX &&
       ballRadiusRatio >= POCKET_EDGE_BAND_MIN &&
       distanceFromEdge < 0.02 &&
@@ -134,18 +146,18 @@ function loop() {
       ballVelocity = -ballVelocity * 0.6;
     }
 
-    // ---- 高さ更新 ----
+    // 高さ
     ballHeight = updateHeight(ballHeight, ballVelocity);
 
-    // ---- ロック判定（中央到達）----
-    if (
+    // ロック
+    if(
       Math.abs(ballVelocity) < 0.0005 &&
       ballRadiusRatio <= POCKET_CENTER_RATIO
     ){
       ballVelocity = 0;
       ballRadiusRatio = POCKET_CENTER_RATIO;
 
-      resultNumber = getWinningNumber(ballAngle, rotation);
+      resultNumber = getWinningNumber(ballAngle, rotation, numbers);
       if(resultEl) resultEl.textContent = "Result: " + resultNumber;
 
       lockedOffset = ballAngle + rotation;
@@ -155,24 +167,20 @@ function loop() {
 
   } else {
 
-    // =====================================
-    // ロック後：ポケット追従
-    // =====================================
+    // ポケット追従
     ballAngle = lockedOffset - rotation;
 
-    if (settleVibration > 0.0001) {
+    if(settleVibration > 0.0001){
       ballAngle += (Math.random() - 0.5) * settleVibration;
       settleVibration *= 0.95;
     }
 
-    // ホイール停止でSPIN終了
     if(Math.abs(velocity) < 0.0005){
       isSpinning = false;
     }
   }
 
   drawBall(ctx, canvas, ballAngle, ballRadiusRatio, ballHeight);
-
   requestAnimationFrame(loop);
 }
 
