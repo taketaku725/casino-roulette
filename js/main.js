@@ -123,7 +123,6 @@ function loop(){
       ballAngle += (Math.random() - 0.5) * settleVibration;
       settleVibration *= 0.95;
     }
-  }
 
   // ---- 描画 ----
   drawWheel(ctx, canvas, rotation);
@@ -133,5 +132,6 @@ function loop(){
 }
 
 loop();
+
 
 
