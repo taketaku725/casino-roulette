@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Roulette</title>
+  <link rel="icon" href="img/casino.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/casino.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="controls">
+      <div id="result"></div>
+      <select id="modeSelect">
+        <option value="european">European</option>
+        <option value="american">American</option>
+      </select>
+      <button id="spinBtn">SPIN</button>
+    </div>
+
+    <canvas id="rouletteCanvas"></canvas>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
