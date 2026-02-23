@@ -6,7 +6,7 @@ export function getWinningNumber(ballAngle, rotation, numbers){
   const adjusted = (ballAngle + rotation) % (Math.PI*2);
   const modAngle = adjusted < 0 ? adjusted + Math.PI*2 : adjusted;
 
-  const index = Math.floor(modAngle / slice);
+  const index = Math.floor((modAngle + slice/2) / slice) % total;
 
   return numbers[index];
 }
