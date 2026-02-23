@@ -15,8 +15,8 @@ export function drawWheel(ctx, canvas, rotation, numbers){
   ctx.fillStyle = "#4a2f18";
   ctx.fill();
 
-  // 回転開始
-  ctx.rotate(rotation);
+  // 回転開始（真上を基準にする）
+  ctx.rotate(rotation - Math.PI / 2);
 
   // 木部
   ctx.beginPath();
@@ -105,4 +105,5 @@ export function drawWheel(ctx, canvas, rotation, numbers){
 
   ctx.restore();
 }
+
 
