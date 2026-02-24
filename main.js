@@ -93,7 +93,7 @@ spinBtn.addEventListener("click", () => {
   state = "outer";
   resultDiv.textContent = "";
 
-  wheelSpeed = 0.05 + Math.random() * 0.05;
+  wheelSpeed = 0.02 + Math.random() * 0.05;
   ballSpeed = -0.55 - Math.random() * 0.1;
 
   ballRadius = outerWallR;
@@ -204,7 +204,7 @@ function loop() {
 
     else if (state === "fall") {
 
-      radialSpeed -= 0.002;
+      radialSpeed -= 0.001;
       ballRadius += radialSpeed;
 
       if (ballRadius <= pocketOuterR - ballVisualRadius) {
@@ -291,5 +291,6 @@ function loop() {
 
 
 loop();
+
 
 
