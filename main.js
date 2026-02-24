@@ -93,13 +93,13 @@ spinBtn.addEventListener("click", () => {
   state = "outer";
   resultDiv.textContent = "";
 
-  wheelSpeed = 0.14 + Math.random() * 0.05;
+  wheelSpeed = 0.05 + Math.random() * 0.05;
   ballSpeed = -0.55 - Math.random() * 0.1;
 
   ballRadius = outerWallR;
   radialSpeed = 0;
 
-  bounceMax = Math.floor(Math.random() * 3) + 1;
+  bounceMax = Math.floor(Math.random() * 5) + 1;
   bounceCount = 0;
 });
 
@@ -191,7 +191,7 @@ function loop() {
     wheelRotation += wheelSpeed;
     ballAngle += ballSpeed;
 
-    wheelSpeed *= 0.999;
+    wheelSpeed *= 0.9999;
     ballSpeed *= 0.995;
 
     if (state === "outer") {
@@ -287,5 +287,6 @@ function loop() {
 
   requestAnimationFrame(loop);
 }
+
 
 loop();
