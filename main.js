@@ -31,6 +31,10 @@ let numbers = [];
 let currentIndex = 0;
 let lockedAngle = 0;
 
+// ===== DEBUG =====
+let resultHistory = [];
+let resultCount = {};
+
 // ======================
 // サイズ
 // ======================
@@ -273,6 +277,42 @@ function loop() {
       if (Math.abs(wheelSpeed) < 0.003) {
         spinning = false;
         resultDiv.textContent = `結果：${numbers[currentIndex]}`;
+
+        // ===== DEBUG LOG =====
+        const result = numbers[currentIndex];
+
+        // 履歴追加
+        resultHistory.push(result);
+
+        // カウント
+        if (!resultCount[result]) {
+          resultCount[result] = 0;
+        }
+        resultCount[result]++;
+
+        // 割合計算
+        const total = resultHistory.length;
+
+        console.clear();
+        console.log("===== ルーレット結果履歴 =====");
+        console.log(resultHistory.join(", "));
+        console.log("総回転数:", total);
+
+        console.log("----- 割合 -----");
+        Object.keys(resultCount)
+          .sort((a, b) => {
+            if (a === "00") return 1;
+            if (b === "00") return -1;
+            return Number(a) - Number(b);
+          })
+          .forEach(key => {
+            const percentage =
+              ((resultCount[key] / total) * 100).toFixed(2);
+            console.log(
+      `        ${key}: ${resultCount[key]}回 (${percentage}%)`
+            );
+          });
+        
         state = "idle";
       }
     }
@@ -291,6 +331,7 @@ function loop() {
 
 
 loop();
+
 
 
 
