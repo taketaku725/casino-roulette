@@ -267,7 +267,7 @@ function loop() {
 
     else if (state === "stop") {
 
-      wheelSpeed *= 0.99;
+      wheelSpeed *= 0.9;
       ballAngle = wheelRotation + lockedAngle;
 
       if (Math.abs(wheelSpeed) < 0.003) {
@@ -291,6 +291,7 @@ function loop() {
 
 
 loop();
+
 
 
 
