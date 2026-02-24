@@ -156,10 +156,11 @@ function drawWheel() {
     ctx.save();
     ctx.rotate(angle + slice / 2);
     ctx.fillStyle = "white";
-    ctx.textAlign = "center";
+    ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     ctx.font = `${radius * 0.06}px sans-serif`;
-    ctx.fillText(num, (pocketInnerR + pocketOuterR) / 2, 0);
+    const textOffset = 4; // 余白（好みで調整）
+    ctx.fillText(num, pocketOuterR - textOffset, 0);
     ctx.restore();
   }
 
@@ -290,3 +291,4 @@ function loop() {
 
 
 loop();
+
