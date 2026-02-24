@@ -97,7 +97,7 @@ spinBtn.addEventListener("click", () => {
   state = "outer";
   resultDiv.textContent = "";
 
-  wheelSpeed = 0.02 + Math.random() * 0.05;
+  wheelSpeed = 0.03 + Math.random() * 0.01;
   ballSpeed = -0.55 - Math.random() * 0.1;
 
   ballRadius = outerWallR;
@@ -331,6 +331,7 @@ function loop() {
 
 
 loop();
+
 
 
 
