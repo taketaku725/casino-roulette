@@ -41,19 +41,40 @@ canvas {
 
 #result {
   text-align: center;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: bold;
   letter-spacing: 2px;
   margin-bottom: 20px;
+
+  min-height: 2.5rem;
+  line-height: 2.5rem;
 }
 
 .history {
   margin-top: 15px;
   text-align: center;
   fontsize: 1.2rem;
-  min-height:32px;
+  min-height:40px;
   overflow-x: auto;
   white-space: nowrap;
+}
+
+history-item {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 40px;      /* ← 横幅固定 */
+  height: 32px;     /* 高さ固定 */
+  margin: 4px;
+
+  border: 2px solid #333;
+  border-radius: 6px;
+
+  font-weight: bold;
+  font-size: 1rem;
+
+  background: #fff;
 }
 
 button {
@@ -101,5 +122,6 @@ select {
   }
 
 }
+
 
 
