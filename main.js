@@ -289,7 +289,7 @@ function loop() {
         const color = getNumberColor(result);
 
         resultDiv.innerHTML =
-          `<span style="color:${color}">結果：${result}</span>`;
+          `結果：<span class="result-number" style="color:${color}">${result}</span>`;
 
         // ===== 履歴追加 =====
         addHistory(result, color);
@@ -319,22 +319,11 @@ function addHistory(num, color) {
   historyContainer.innerHTML = resultHistory
     .slice(0, 20) // 最新20件
     .map(item =>
-      `<span style="
-         color:${item.color};
-         font-weight:bold;
-         margin:0 6px;
-       ">${item.num}</span>`
+      `<span class="history-item" style="color:${item.color}">
+         ${item.num}
+       </span>`
     )
     .join("");
 }
 
 loop();
-
-
-
-
-
-
-
-
-
