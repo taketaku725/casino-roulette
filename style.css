@@ -47,6 +47,13 @@ canvas {
   margin-bottom: 20px;
 }
 
+.history {
+  margin-top: 15px;
+  text-align: center;
+  fontsize: 1.2rem;
+  min-height:32px;
+}
+
 button {
   padding: 14px 20px;
   font-size: 18px;
@@ -92,3 +99,4 @@ select {
   }
 
 }
+
