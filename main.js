@@ -36,6 +36,16 @@ let resultHistory = [];
 let resultCount = {};
 
 // ======================
+// 数字色
+// ======================
+function getNumberColor(num) {
+  if (num === 0 || num === "00") return "green";
+
+  const index = numbers.indexOf(num);
+  return (index % 2 === 0) ? "red" : "black";
+}
+
+// ======================
 // サイズ
 // ======================
 function resize() {
@@ -276,7 +286,14 @@ function loop() {
 
       if (Math.abs(wheelSpeed) < 0.003) {
         spinning = false;
-        resultDiv.textContent = `結果：${numbers[currentIndex]}`;
+        const result = numbers[currentIndex];
+        const color = getNumberColor(result);
+
+        resultDiv.innerHTML =
+          `<span style="color:${color}">結果：${result}</span>`;
+
+        // ===== 履歴追加 =====
+        addHistory(result, color);
 
         // ===== DEBUG LOG =====
         const result = numbers[currentIndex];
@@ -329,8 +346,26 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
+function addHistory(num, color) {
+  resultHistory.unshift({ num, color });
+
+  const historyContainer =
+    document.getElementById("history");
+
+  historyContainer.innerHTML = resultHistory
+    .slice(0, 20) // 最新20件
+    .map(item =>
+      `<span style="
+         color:${item.color};
+         font-weight:bold;
+         margin:0 6px;
+       ">${item.num}</span>`
+    )
+    .join("");
+}
 
 loop();
+
 
 
 
