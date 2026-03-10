@@ -51,12 +51,17 @@ canvas {
 }
 
 .history {
+  display: flex;
+  align-items: center;
   margin-top: 15px;
   text-align: center;
   border: 2px solid #333;
   border-radius: 6px;
-  fontsize: 1.2rem;
+  font-size: 1.2rem;
   min-height:40px;
+
+  padding: 4px 6px;   /* ← 追加 */
+
   overflow-x: auto;
   white-space: nowrap;
 }
@@ -121,6 +126,7 @@ select {
   }
 
 }
+
 
 
 
