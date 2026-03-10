@@ -54,7 +54,8 @@ canvas {
   display: flex;
   align-items: center;
   margin-top: 15px;
-  text-align: center;
+  width: 90%;
+  max-width: 90%;
   border: 2px solid #333;
   border-radius: 6px;
   font-size: 1.2rem;
@@ -73,7 +74,10 @@ canvas {
 
   width: 40px;      /* ← 横幅固定 */
   height: 32px;     /* 高さ固定 */
-  margin: 5px;
+
+  flex: 0 0 auto;
+  
+  margin-right: 6px;
 
   font-weight: bold;
   font-size: 1rem;
@@ -126,6 +130,7 @@ select {
   }
 
 }
+
 
 
 
